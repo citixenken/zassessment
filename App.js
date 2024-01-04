@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
   FlatList,
+  Alert,
 } from "react-native";
 import { FontAwesome, Octicons } from "@expo/vector-icons";
 import * as SplashScreen from "expo-splash-screen";
@@ -53,15 +54,29 @@ export default function App() {
       setIssue("");
     }
   };
+
   const handleDeleteIssue = (index) => {
-    let newIssues = [...issues];
-    newIssues.splice(index, 1);
+    // Show an alert for confirmation
+    Alert.alert("Delete Issue", "Are you sure you want to delete this issue?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Delete",
+        onPress: () => {
+          let newIssues = [...issues];
+          newIssues.splice(index, 1);
 
-    setIssues(newIssues);
-    setEditingIndex(null); // Reset editingIndex when deleting an issue
-
-    setIssue(""); //delete content from text input if it exists
+          setIssues(newIssues);
+          setEditingIndex(null); // Reset editingIndex when deleting an issue
+          setIssue(""); // Delete content from text input if it exists
+        },
+        style: "destructive",
+      },
+    ]);
   };
+
   const handleEditIssue = (index) => {
     setIssue(issues[index]);
     setEditingIndex(index);
