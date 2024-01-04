@@ -92,12 +92,16 @@ export default function App() {
           <View style={styles.issuesWrapper}>
             <Text style={styles.sectionTitle}>Issues Logger</Text>
 
-            <FlatList
-              data={issues}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={renderItem}
-              showsVerticalScrollIndicator={false}
-            />
+            {issues.length === 0 ? (
+              <Text style={styles.noIssuesText}>No issues logged!!!</Text>
+            ) : (
+              <FlatList
+                data={issues}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderItem}
+                showsVerticalScrollIndicator={false}
+              />
+            )}
           </View>
 
           {/* add an issue */}
@@ -163,6 +167,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  noIssuesText: {
+    fontSize: 16,
+    color: "crimson",
+    textAlign: "center",
+    marginVertical: 200,
   },
   input: {
     paddingVertical: 15,
