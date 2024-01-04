@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -9,20 +9,37 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  ScrollView,
   FlatList,
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Octicons } from "@expo/vector-icons";
+import * as SplashScreen from "expo-splash-screen";
 import Issue from "./components/Issue";
 
 export default function App() {
   const [issue, setIssue] = useState();
   const [issues, setIssues] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [isSplashVisible, setSplashVisible] = useState(true);
+
+  useEffect(() => {
+    // Hide splash screen after 2 seconds
+    const hideSplash = async () => {
+      await SplashScreen.hideAsync();
+      setSplashVisible(false);
+    };
+
+    const timer = setTimeout(() => {
+      hideSplash();
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   const handleAddIssue = () => {
     Keyboard.dismiss();
-    if (issue.trim() !== "") {
+    if (issue && issue.trim() !== "") {
       if (editingIndex !== null) {
         // Editing existing issue
         const updatedIssues = [...issues];
@@ -62,35 +79,47 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.issuesWrapper}>
-        <Text style={styles.sectionTitle}>Issues Logger</Text>
+      {isSplashVisible && (
+        <View style={styles.splashContainer}>
+          {/* Your splash screen content goes here */}
+          <Text style={styles.splashText}>Issues Logger©</Text>
+          <Octicons name="issue-closed" size={30} color="green" />
+          <Text style={styles.splashMiniText}>A Zamara™ Product </Text>
+        </View>
+      )}
+      {!isSplashVisible && (
+        <>
+          <View style={styles.issuesWrapper}>
+            <Text style={styles.sectionTitle}>Issues Logger</Text>
 
-        <FlatList
-          data={issues}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
-
-      {/* add an issue */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.writeIssueWrapper}
-      >
-        <TextInput
-          style={styles.input}
-          placeholder={"Add an Issue..."}
-          value={issue}
-          onChangeText={(text) => setIssue(text)}
-          multiline
-        />
-        <TouchableOpacity onPress={() => handleAddIssue()}>
-          <View style={styles.addWrapper}>
-            <FontAwesome name="plus" size={24} color="green" />
+            <FlatList
+              data={issues}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={renderItem}
+              showsVerticalScrollIndicator={false}
+            />
           </View>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
+
+          {/* add an issue */}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.writeIssueWrapper}
+          >
+            <TextInput
+              style={styles.input}
+              placeholder={"Add an Issue..."}
+              value={issue}
+              onChangeText={(text) => setIssue(text)}
+              multiline
+            />
+            <TouchableOpacity onPress={() => handleAddIssue()}>
+              <View style={styles.addWrapper}>
+                <FontAwesome name="plus" size={24} color="green" />
+              </View>
+            </TouchableOpacity>
+          </KeyboardAvoidingView>
+        </>
+      )}
     </View>
   );
 }
@@ -102,10 +131,24 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
   },
+  splashContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#E8EAED",
+  },
+  splashText: {
+    fontSize: 36,
+    fontWeight: "bold",
+  },
+  splashMiniText: {
+    fontSize: 14,
+    margin: 10,
+  },
   issuesWrapper: {
     paddingTop: 80,
     paddingHorizontal: 20,
-    paddingBottom: 180,
+    paddingBottom: 150,
   },
   sectionTitle: {
     fontSize: 24,
@@ -115,7 +158,7 @@ const styles = StyleSheet.create({
   issues: { marginTop: 30 },
   writeIssueWrapper: {
     position: "absolute",
-    bottom: 60,
+    bottom: 20,
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-around",
