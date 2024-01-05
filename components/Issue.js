@@ -1,21 +1,29 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-const Issue = ({ text, onDelete, onEdit }) => {
+const Issue = ({ id, text, createdDate, onDelete, onEdit }) => {
   return (
-    <View style={styles.item}>
-      <View style={styles.itemLeft}>
-        <TouchableOpacity style={styles.square}></TouchableOpacity>
-        <Text style={styles.itemText}>{text}</Text>
+    <>
+      <Text style={styles.itemHeader}>
+        <Text style={styles.itemPrefix}>Issue #</Text>: {id}
+      </Text>
+      <Text style={styles.itemCreatedDate}>
+        <Text style={styles.itemPrefix}>Created on</Text>: {createdDate}
+      </Text>
+      <View style={styles.item}>
+        <View style={styles.itemLeft}>
+          <TouchableOpacity style={styles.square}></TouchableOpacity>
+          <Text style={styles.itemText}>{text}</Text>
+        </View>
+        <View style={styles.buttons}>
+          <TouchableOpacity onPress={onEdit} style={styles.button}>
+            <FontAwesome name="edit" size={24} color="grey" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onDelete}>
+            <FontAwesome name="trash" size={24} color="red" />
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.buttons}>
-        <TouchableOpacity onPress={onEdit} style={styles.button}>
-          <FontAwesome name="edit" size={24} color="grey" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onDelete}>
-          <FontAwesome name="trash" size={24} color="red" />
-        </TouchableOpacity>
-      </View>
-    </View>
+    </>
   );
 };
 
@@ -36,6 +44,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexWrap: "wrap",
   },
+  itemPrefix: { fontWeight: "bold" },
+  itemHeader: { overflow: "hidden", marginTop: 10 },
+  itemCreatedDate: { marginVertical: 10 },
   itemText: { maxWidth: "70%", overflow: "hidden" },
   square: {
     width: 24,

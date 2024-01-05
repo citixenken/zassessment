@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect } from "react";
 import {
   Keyboard,
@@ -15,6 +14,9 @@ import {
 import { FontAwesome, Octicons } from "@expo/vector-icons";
 import * as SplashScreen from "expo-splash-screen";
 import Issue from "./components/Issue";
+
+const API_ENDPOINT =
+  "https://crudcrud.com/api/35444fce938d4086be86c1d2e0b86d6d/issues";
 
 export default function App() {
   const [issue, setIssue] = useState();
@@ -38,25 +40,96 @@ export default function App() {
     };
   }, []);
 
-  const handleAddIssue = () => {
-    Keyboard.dismiss();
-    if (issue && issue.trim() !== "") {
-      if (editingIndex !== null) {
-        // Editing existing issue
-        const updatedIssues = [...issues];
-        updatedIssues[editingIndex] = issue;
-        setIssues(updatedIssues);
-        setEditingIndex(null);
-      } else {
-        // Adding new issue
-        setIssues([...issues, issue]);
-      }
-      setIssue("");
+  const fetchIssues = async () => {
+    try {
+      const response = await fetch(API_ENDPOINT);
+      const data = await response.json();
+      setIssues(data);
+    } catch (error) {
+      console.error("Error fetching issues:", error);
     }
   };
 
-  const handleDeleteIssue = (index) => {
-    // Show an alert for confirmation
+  useEffect(() => {
+    fetchIssues();
+  }, []);
+
+  const handleAddIssue = async () => {
+    Keyboard.dismiss();
+    if (!issue) {
+      Alert.alert("Error", "Please enter an issue before adding.");
+      return;
+    }
+
+    try {
+      const response = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: issue,
+          createdDate:
+            new Date().toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            }) +
+            ", " +
+            new Date().toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+        }),
+      });
+
+      const data = await response.json();
+      setIssues([...issues, data]);
+      setIssue(""); // Clear input field after adding issue
+    } catch (error) {
+      console.error("Error adding issue:", error);
+    }
+  };
+
+  // Update operation
+  const handleEditIssue = async (id, index) => {
+    setIssue(issues[index].text);
+    setEditingIndex(index);
+  };
+
+  const handleUpdateIssue = async () => {
+    Keyboard.dismiss();
+    if (!issue) {
+      Alert.alert("Error", "Cannot update with blank info.");
+      return;
+    }
+
+    if (editingIndex === null) {
+      Alert.alert("Error", "No issue selected for editing.");
+      return;
+    }
+
+    try {
+      const updatedIssues = [...issues];
+      updatedIssues[editingIndex].text = issue;
+
+      await fetch(`${API_ENDPOINT}/${issues[editingIndex]._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: issue }),
+      });
+
+      setIssues(updatedIssues);
+      setIssue("");
+      setEditingIndex(null);
+    } catch (error) {
+      console.error("Error updating issue:", error);
+    }
+  };
+
+  const handleDeleteIssue = async (id) => {
     Alert.alert("Delete Issue", "Are you sure you want to delete this issue?", [
       {
         text: "Cancel",
@@ -64,32 +137,35 @@ export default function App() {
       },
       {
         text: "Delete",
-        onPress: () => {
-          let newIssues = [...issues];
-          newIssues.splice(index, 1);
+        onPress: async () => {
+          try {
+            await fetch(`${API_ENDPOINT}/${id}`, {
+              method: "DELETE",
+            });
 
-          setIssues(newIssues);
-          setEditingIndex(null); // Reset editingIndex when deleting an issue
-          setIssue(""); // Delete content from text input if it exists
+            const updatedIssues = issues.filter((item) => item._id !== id);
+            setIssues(updatedIssues);
+          } catch (error) {
+            console.error("Error deleting issue:", error);
+          }
         },
         style: "destructive",
       },
     ]);
   };
-
-  const handleEditIssue = (index) => {
-    setIssue(issues[index]);
-    setEditingIndex(index);
-  };
-
   const renderItem = ({ item, index }) => (
-    <TouchableOpacity>
-      <Issue
-        text={item}
-        onDelete={() => handleDeleteIssue(index)}
-        onEdit={() => handleEditIssue(index)}
-      />
-    </TouchableOpacity>
+    <View>
+      <TouchableOpacity>
+        <Issue
+          id={item._id}
+          text={item.text}
+          createdDate={item.createdDate}
+          onDelete={() => handleDeleteIssue(item._id)}
+          onEdit={() => handleEditIssue(item._id, index)}
+        />
+      </TouchableOpacity>
+      {index !== issues.length - 1 && <View style={styles.divider} />}
+    </View>
   );
 
   return (
@@ -105,14 +181,14 @@ export default function App() {
       {!isSplashVisible && (
         <>
           <View style={styles.issuesWrapper}>
-            <Text style={styles.sectionTitle}>Issues Logger</Text>
+            <Text style={styles.sectionTitle}>Issues Logger 🎯</Text>
 
             {issues.length === 0 ? (
               <Text style={styles.noIssuesText}>No issues logged!!!</Text>
             ) : (
               <FlatList
                 data={issues}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item) => item._id}
                 renderItem={renderItem}
                 showsVerticalScrollIndicator={false}
               />
@@ -131,11 +207,19 @@ export default function App() {
               onChangeText={(text) => setIssue(text)}
               multiline
             />
-            <TouchableOpacity onPress={() => handleAddIssue()}>
-              <View style={styles.addWrapper}>
-                <FontAwesome name="plus" size={24} color="green" />
-              </View>
-            </TouchableOpacity>
+            {editingIndex === null ? (
+              <TouchableOpacity onPress={handleAddIssue}>
+                <View style={styles.addWrapper}>
+                  <FontAwesome name="plus" size={24} color="green" />
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={handleUpdateIssue}>
+                <View style={styles.addWrapper}>
+                  <FontAwesome name="edit" size={24} color="blue" />
+                </View>
+              </TouchableOpacity>
+            )}
           </KeyboardAvoidingView>
         </>
       )}
@@ -148,7 +232,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#E8EAED",
     padding: 10,
-    marginTop: 10,
+    // marginTop: 10,
   },
   splashContainer: {
     flex: 1,
@@ -208,5 +292,9 @@ const styles = StyleSheet.create({
     borderColor: "#C0C0C0",
     borderWidth: 1,
   },
-  addText: {},
+  divider: {
+    height: 2,
+    backgroundColor: "#C0C0C0",
+    marginVertical: 10,
+  },
 });
