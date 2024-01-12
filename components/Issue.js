@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Octicons } from "@expo/vector-icons";
 const Issue = ({ id, text, createdDate, onDelete, onEdit }) => {
   return (
     <>
@@ -11,7 +11,13 @@ const Issue = ({ id, text, createdDate, onDelete, onEdit }) => {
       </Text>
       <View style={styles.item}>
         <View style={styles.itemLeft}>
-          <TouchableOpacity style={styles.square}></TouchableOpacity>
+          {/* <TouchableOpacity style={styles.square}></TouchableOpacity> */}
+          <Octicons
+            name="issue-opened"
+            size={24}
+            color="green"
+            style={styles.square}
+          />
           <Text style={styles.itemText}>{text}</Text>
         </View>
         <View style={styles.buttons}>
@@ -49,12 +55,8 @@ const styles = StyleSheet.create({
   itemCreatedDate: { marginVertical: 10 },
   itemText: { maxWidth: "70%", overflow: "hidden" },
   square: {
-    width: 24,
-    height: 24,
-    backgroundColor: "#55BCF6",
-    opacity: 0.4,
-    borderRadius: 5,
     marginRight: 15,
+    paddingHorizontal: 5,
   },
   circular: {
     width: 12,

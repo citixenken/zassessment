@@ -11,14 +11,17 @@ import {
   FlatList,
   Alert,
 } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { FontAwesome, Octicons } from "@expo/vector-icons";
 import * as SplashScreen from "expo-splash-screen";
 import Issue from "./components/Issue";
 
 const API_ENDPOINT =
-  "https://crudcrud.com/api/35444fce938d4086be86c1d2e0b86d6d/issues";
+  "https://crudcrud.com/api/5f417df0e0594ada8d2abf753b0676fc/issues";
 
 export default function App() {
+  const [isLoading, setLoading] = useState(true);
+
   const [issue, setIssue] = useState();
   const [issues, setIssues] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -45,6 +48,7 @@ export default function App() {
       const response = await fetch(API_ENDPOINT);
       const data = await response.json();
       setIssues(data);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching issues:", error);
     }
@@ -182,16 +186,22 @@ export default function App() {
         <>
           <View style={styles.issuesWrapper}>
             <Text style={styles.sectionTitle}>Issues Logger 🎯</Text>
-
-            {issues.length === 0 ? (
-              <Text style={styles.noIssuesText}>No issues logged!!!</Text>
+            <View style={styles.divider} />
+            {isLoading ? ( // Render a spinner while data is being fetched
+              <ActivityIndicator size="large" color="#0000ff" />
             ) : (
-              <FlatList
-                data={issues}
-                keyExtractor={(item) => item._id}
-                renderItem={renderItem}
-                showsVerticalScrollIndicator={false}
-              />
+              <>
+                {issues.length === 0 ? (
+                  <Text style={styles.noIssuesText}>No issues logged 🙁</Text>
+                ) : (
+                  <FlatList
+                    data={issues}
+                    keyExtractor={(item) => item._id}
+                    renderItem={renderItem}
+                    showsVerticalScrollIndicator={false}
+                  />
+                )}
+              </>
             )}
           </View>
 
