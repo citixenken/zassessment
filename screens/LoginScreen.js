@@ -59,6 +59,7 @@ const LoginScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View style={styles.inputContainer}>
+        <Text style={styles.loginTitle}>Zamara™</Text>
         <TextInput
           placeholder="Your Email"
           value={email}
@@ -95,7 +96,9 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", alignItems: "center" },
   inputContainer: { width: "80%" },
+  loginTitle: { fontSize: 36, textAlign: "center"},
   input: {
+    
     backgroundColor: "white",
     paddingHorizontal: 15,
     paddingVertical: 10,
@@ -121,6 +124,6 @@ const styles = StyleSheet.create({
     borderColor: "#0782F9",
     borderWidth: 2,
   },
-  buttonText: { color: "#FFF", fontWeight: "700", fontSize: 16 },
-  buttonOutlineText: { color: "#0782F9", fontWeight: "700", fontSize: 16 },
+  buttonText: { color: "#FFF",  fontSize: 16 },
+  buttonOutlineText: { color: "#0782F9",  fontSize: 16 },
 });

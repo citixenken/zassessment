@@ -50,10 +50,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexWrap: "wrap",
   },
-  itemPrefix: { fontWeight: "bold" },
-  itemHeader: { overflow: "hidden", marginTop: 10 },
+  itemPrefix: { fontFamily: "SpaceMono-Bold" },
+  itemHeader: { fontFamily: "SpaceMono-Regular", overflow: "hidden", marginTop: 10 },
   itemCreatedDate: { marginVertical: 10 },
-  itemText: { maxWidth: "70%", overflow: "hidden" },
+  itemText: { fontFamily: "SpaceMono-Regular", maxWidth: "70%", overflow: "hidden" },
   square: {
     marginRight: 15,
     paddingHorizontal: 5,

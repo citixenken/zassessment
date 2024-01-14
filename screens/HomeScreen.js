@@ -24,7 +24,7 @@ import Issue from "../components/Issue";
 import { auth } from "../firebase";
 
 const API_ENDPOINT =
-  "https://crudcrud.com/api/f92d97f37cb64f8a99703c43e8fcc571/issues";
+  "https://crudcrud.com/api/0745a5df504d4ca0a45b44995d953ebf/issues";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -208,7 +208,7 @@ export default function HomeScreen() {
           <View style={styles.issuesWrapper}>
             <Text style={styles.sectionTitle}>Issues Logger 🎯</Text>
             <View style={styles.issuesUserDetails}>
-              <Text>
+              <Text style={{fontFamily: "SpaceMono-Regular"}}>
                 <Entypo name="email" size={12} color="black" />:{" "}
                 {auth.currentUser?.email}
               </Text>
@@ -282,9 +282,10 @@ const styles = StyleSheet.create({
   },
   splashText: {
     fontSize: 36,
-    fontWeight: "bold",
+    fontFamily: "SpaceMono-Regular",
   },
   splashMiniText: {
+    fontFamily: "SpaceMono-Regular",
     fontSize: 14,
     margin: 10,
   },
@@ -295,7 +296,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontFamily: "SpaceMono-Regular",
     marginBottom: 20,
   },
   issues: { marginTop: 30 },
@@ -308,12 +309,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   noIssuesText: {
+    fontFamily: "SpaceMono-Regular",
     fontSize: 16,
     color: "crimson",
     textAlign: "center",
     marginVertical: 200,
   },
   input: {
+    fontFamily: "SpaceMono-Regular",
     paddingVertical: 15,
     paddingHorizontal: 15,
     width: 250,

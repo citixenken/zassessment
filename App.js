@@ -10,7 +10,8 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    "SpaceMono-Regular": require("./assets/fonts/Inter-Black.otf"),
+    "SpaceMono-Regular": require("./assets/fonts/SpaceMono-Regular.ttf"),
+    "SpaceMono-Bold": require("./assets/fonts/SpaceMono-Bold.ttf"),
   });
   return (
     <NavigationContainer>
